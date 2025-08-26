@@ -1,12 +1,12 @@
 {
   "name": "portfolio-n",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://matlads.github.io/portfolio/",
   "type": "module",
   "scripts": {
-    "predeploy" : "npm run build",
-    "deploy" : "gh-pages -d dist",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
