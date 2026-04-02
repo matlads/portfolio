@@ -33,7 +33,7 @@ npm run lint -- --fix # Fix auto-fixable issues
 
 **Note**: The lint command uses zero warnings tolerance (`--max-warnings 0`). All lint errors must be fixed before committing.
 
-**ESLint Version**: ESLint is pinned to version 8 (^8.0.0) because the configuration uses the legacy `.eslintrc.cjs` format. The `react-refresh/only-export-components` rule is currently commented out due to plugin compatibility.
+**ESLint Version**: ESLint is now version 10 (^10.1.0) using the new flat config format (`eslint.config.cjs`). The `react-refresh/only-export-components` rule is currently commented out due to plugin compatibility. Note: React plugins use legacy peer dependencies (--legacy-peer-deps) as they don't yet officially support ESLint 10.
 
 ### Deployment
 ```bash
@@ -75,14 +75,14 @@ npx eslint path/to/file.jsx --ext .js,.jsx
 - No specific error handling patterns observed. Use standard `try/catch` for async operations.
 
 ### ESLint Rules
-The `.eslintrc.cjs` extends:
+The `eslint.config.cjs` extends:
 - `eslint:recommended`
 - `plugin:react/recommended`
 - `plugin:react/jsx-runtime` (for React 17+ JSX transform)
 - `plugin:react-hooks/recommended`
 
 Specific rules:
-- `react-refresh/only-export-components`: Warns if non-component exports are present in files that could be hot‑reloaded. (Currently commented out in `.eslintrc.cjs` due to ESLint version compatibility)
+- `react-refresh/only-export-components`: Warns if non-component exports are present in files that could be hot‑reloaded. (Currently commented out in `eslint.config.cjs` due to plugin compatibility)
 
 ### Formatting
 - Indentation: 2 spaces (inferred from source files).
