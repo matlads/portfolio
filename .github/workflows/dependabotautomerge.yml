@@ -6,11 +6,13 @@ on:
 jobs:
   worker:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     if: github.actor == 'dependabot[bot]'
     steps:
       - name: automerge
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             github.pullRequests.createReview({
