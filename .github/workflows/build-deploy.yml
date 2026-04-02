@@ -24,6 +24,8 @@ jobs:
   # Single deploy job since we're just deploying
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
