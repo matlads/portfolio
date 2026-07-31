@@ -8,9 +8,9 @@ This document provides guidelines for AI agents working on this React + Vite por
 - **Language**: JavaScript (ES modules) with JSX
 - **Linting**: ESLint with React plugins
 - **Formatting**: No Prettier configured (rely on ESLint)
-- **Testing**: No test framework configured currently
+- **Testing**: Vitest with React Testing Library and jsdom
 - **Pre-commit hooks**: Basic git hooks for whitespace, YAML, large files
-- **Deployment**: GitHub Pages via `gh-pages`
+- **Deployment**: GitHub Pages via GitHub Actions workflow (`.github/workflows/build-deploy.yml`)
 
 ## Project Commands
 
@@ -33,13 +33,19 @@ npm run lint -- --fix # Fix auto-fixable issues
 
 **Note**: The lint command uses zero warnings tolerance (`--max-warnings 0`). All lint errors must be fixed before committing.
 
-**ESLint Version**: ESLint is now version 10 (^10.1.0) using the new flat config format (`eslint.config.cjs`). The `react-refresh/only-export-components` rule is currently commented out due to plugin compatibility. Note: React plugins use legacy peer dependencies (--legacy-peer-deps) as they don't yet officially support ESLint 10.
+**ESLint Version**: ESLint is now version 10 (^10.1.0) using the new flat config format (`eslint.config.cjs`) with native flat configs from the plugins (`react.configs.flat.*`, `react-hooks.configs.flat.*`, `react-refresh.configs.vite`). The `react-refresh/only-export-components` rule is enabled. Note: React plugins use legacy peer dependencies (--legacy-peer-deps) as they don't yet officially support ESLint 10.
+
+### Testing
+```bash
+npm test             # Run all tests (Vitest, single run)
+npm run test:watch   # Watch mode
+```
 
 ### Deployment
 ```bash
-npm run predeploy    # Runs `npm run build`
-npm run deploy       # Deploys `dist/` to GitHub Pages via gh-pages
+npm run build        # Build for production (outputs to `dist/`)
 ```
+Deployment is handled automatically by the GitHub Actions workflow (`.github/workflows/build-deploy.yml`) on every push to `main`. No manual deploy command needed.
 
 ### Single File Linting
 ```bash
@@ -93,17 +99,14 @@ Specific rules:
 
 ## Testing
 
-**No test framework is currently configured.** To add tests, consider:
+Vitest with React Testing Library and jsdom is configured (see `vite.config.js` test block and `src/test/setup.js`).
 
-1. **Vitest** (integrates with Vite) – recommended for new tests.
-2. **React Testing Library** for component testing.
-
-If tests are added, update this section with commands like:
 ```bash
 npm test             # Run all tests
 npm run test:watch   # Watch mode
-npm run test:coverage # Coverage report
 ```
+
+Add tests as `src/*.test.jsx` files using Vitest + Testing Library conventions.
 
 ## Pre‑commit Hooks
 
@@ -137,8 +140,8 @@ Recommended VS Code settings (`.vscode/settings.json`):
 ## Deployment Notes
 
 - The project is configured for GitHub Pages with base path `/portfolio/` (see `vite.config.js`).
-- The `homepage` field in `package.json` points to `https://matlads.github.io/portfolio/`.
-- Deployment is triggered via `npm run deploy` (builds and pushes to `gh-pages` branch).
+- Deployment is handled automatically by the `.github/workflows/build-deploy.yml` GitHub Actions workflow on pushes to `main`. It installs deps, lints, builds, and deploys `dist/` via the Pages artifact.
+- No manual deploy needed; the `gh-pages` package and `npm run deploy` were removed in favor of the Actions workflow.
 
 ## Workflow for Agents
 

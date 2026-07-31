@@ -1,54 +1,48 @@
-const {
-    defineConfig,
-    globalIgnores,
-} = require("eslint/config");
+const js = require('@eslint/js')
+const globals = require('globals')
+const react = require('eslint-plugin-react')
+const reactHooks = require('eslint-plugin-react-hooks')
+const reactRefresh = require('eslint-plugin-react-refresh').default
 
-const globals = require("globals");
-
-const {
-    fixupConfigRules,
-} = require("@eslint/compat");
-
-const reactRefresh = require("eslint-plugin-react-refresh");
-const js = require("@eslint/js");
-
-const {
-    FlatCompat,
-} = require("@eslint/eslintrc");
-
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-module.exports = defineConfig([{
+module.exports = [
+  {
+    ignores: ['**/dist', '**/coverage'],
+  },
+  {
+    files: ['**/*.{js,jsx}'],
     languageOptions: {
-        globals: {
-            ...globals.browser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
         },
-
-        ecmaVersion: "latest",
-        sourceType: "module",
-        parserOptions: {},
+      },
     },
-
-    extends: fixupConfigRules(compat.extends(
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:react/jsx-runtime",
-        "plugin:react-hooks/recommended",
-    )),
-
+  },
+  js.configs.recommended,
+  {
+    files: ['**/*.{js,jsx}'],
+    ...react.configs.flat.recommended,
     settings: {
-        react: {
-            version: "19.2",
-        },
+      react: {
+        version: '19.2',
+      },
     },
-
-    plugins: {
-        "react-refresh": reactRefresh,
-    },
-
-    rules: {},
-}, globalIgnores(["**/dist", "**/.eslintrc.cjs", "**/eslint.config.cjs"])]);
+  },
+  {
+    files: ['**/*.{js,jsx}'],
+    ...react.configs.flat['jsx-runtime'],
+  },
+  {
+    files: ['**/*.{js,jsx}'],
+    ...reactHooks.configs.flat['recommended-latest'],
+  },
+  {
+    files: ['**/*.{js,jsx}'],
+    ...reactRefresh.configs.vite,
+  },
+]
