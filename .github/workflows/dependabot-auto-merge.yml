@@ -19,3 +19,19 @@ jobs:
         run: |
           gh pr review --approve "${{ github.event.pull_request.html_url }}"
           gh pr merge --squash --auto "${{ github.event.pull_request.html_url }}"
+      - name: Wait for auto-merge to land
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # The Pages deploy chains off this workflow's completion via workflow_run,
+          # so wait until the merge has actually landed on main before finishing.
+          for _ in $(seq 1 60); do
+            state=$(gh pr view "${{ github.event.pull_request.html_url }}" --json state -q .state)
+            case "$state" in
+              MERGED) exit 0 ;;
+              CLOSED) echo "PR closed without merging; nothing to deploy"; exit 0 ;;
+            esac
+            sleep 5
+          done
+          echo "Timed out waiting for auto-merge" >&2
+          exit 1
