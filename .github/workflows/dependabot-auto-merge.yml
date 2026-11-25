@@ -18,8 +18,24 @@ jobs:
         uses: dependabot/fetch-metadata@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      # shortcut: major bumps are left open for manual review because a breaking
-      # release would fail the deploy build; revisit if we add PR CI that proves it builds
+      # shortcut: major bumps are left open for manual review even when CI passes
+      - name: Wait for PR checks
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: |
+          # Ignore this workflow's own check; waiting on it would deadlock.
+          for _ in $(seq 1 120); do
+            status=$(gh pr checks "$PR" --json name,bucket --jq '[.[] | select(.name != "dependabot")] | if length == 0 then "none" elif any(.bucket == "fail" or .bucket == "cancel") then "fail" elif all(.bucket == "pass" or .bucket == "skipping") then "pass" else "pending" end' || true)
+            case "$status" in
+              pass) exit 0 ;;
+              fail) echo "PR checks failed; leaving the PR open" >&2; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for PR checks" >&2
+          exit 1
       - name: Approve and merge Dependabot PR
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         env:
